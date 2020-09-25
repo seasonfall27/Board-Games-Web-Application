@@ -1,0 +1,57 @@
+﻿<UserControl x:Class="CECS475.BoardGames.Chess.WpfView.ChessView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CECS475.BoardGames.Chess.WpfView"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="400">
+    <UserControl.Resources>
+        <local:ChessViewModel x:Key="vm"/>
+
+        <local:ChessSquareBackgroundConverter x:Key="BackgroundColor"/>
+        <local:ChessPieceImageConverter x:Key="ChessPiece"/>
+    </UserControl.Resources>
+    <ItemsControl x:Name="BoardPositions" DataContext="{DynamicResource vm}"
+                  ItemsSource="{Binding Squares}">
+        <!-- 
+        The ItemsPanel is the "container" for the controls that get spit out. 
+        A UniformGrid is a grid that auto-creates rows and columns that are evenly sized.
+        -->
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <UniformGrid Columns="8" Rows="8" Background="White"/>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <!-- 
+        The ItemTemplate defines what to generate for each entry in the ItemSource. Our ItemSource
+        is a collection of ChessSquare objects, which we can bind to when generating the controls
+        for the item.
+        -->
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <!-- 
+                This control is created for each element in the ItemSource. 
+                A Border control draws a border around whatever control it contains.
+                -->
+                <Border BorderThickness="1" BorderBrush="Gray"
+                        MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave"
+                        MouseUp="Border_MouseUp">
+                    <Border.Background>
+                        <MultiBinding Converter="{StaticResource BackgroundColor}">
+                            <Binding Path="Position"/>
+                            <Binding Path="IsHighlighted"/>
+                            <Binding Path="IsSelected"/>
+                            <Binding Path="IsCheck"/>
+                        </MultiBinding>
+                    </Border.Background>
+
+                    <!-- We bind the Source property to the Position property, using our converter
+                     to turn the ChessPiece object into an Image -->
+                    <Image Source="{Binding Player, Converter={StaticResource ChessPiece}}"/>
+
+                </Border>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+</UserControl>
